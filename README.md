@@ -1,3 +1,3 @@
 #### Project Architecture
 
-![](git remote add origin https://github.com/B2Kumar03/Remote-Team-Collaboration-Dashboard.git)
+![](httpsgithub.comB2Kumar03project2ImageblobmainArchitectureOfProject.pngraw=truet)
