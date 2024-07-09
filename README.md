@@ -1,3 +1,4 @@
 #### Project Architecture
 
-![](httpsgithub.comB2Kumar03project2ImageblobmainArchitectureOfProject.pngraw=truet)
+![Architecture of Project](https://github.com/B2Kumar03/project2Image/blob/main/ArchitectureOfProject.png?raw=true)
+
