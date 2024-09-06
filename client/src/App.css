@@ -1,0 +1,25 @@
+body {
+  background-color: theme('colors.lightBackground'); /* Apply light background */
+  font-family: 'Inter', sans-serif; /* You can change this font if needed */
+}
+
+h1, h2, h3, h4, h5, h6 {
+  color: theme('colors.darkText'); /* Dark text color for headings */
+}
+
+input {
+  @apply bg-formField border border-gray-300 rounded-md p-2 w-full; /* Styling form fields */
+}
+
+button {
+  @apply bg-primaryBlue text-white rounded-md p-2; /* Primary blue button */
+}
+
+button:hover {
+  @apply bg-buttonHover; /* Darker blue on hover */
+}
+
+/* Custom margin and padding */
+.container {
+  @apply mx-auto my-8 px-4; /* Center container with padding */
+}
