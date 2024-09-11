@@ -20,7 +20,7 @@ const io = new Server(server, {
 let initialTasks = {
   todo: {
     title: "To Do",
-    color: "bg-red-100",
+    color: "bg-red-400",
     tasks: [
       {
         id: "1",
@@ -38,7 +38,7 @@ let initialTasks = {
   },
   inProgress: {
     title: "In Progress",
-    color: "bg-yellow-100",
+    color: "bg-yellow-400",
     tasks: [
       {
         id: "3",
@@ -50,10 +50,22 @@ let initialTasks = {
   },
   done: {
     title: "Done",
-    color: "bg-green-100",
+    color: "bg-green-400",
     tasks: [
       {
-        id: "4",
+        id: "45",
+        content: "Set up project repository",
+        assignedTo: "Alex",
+        comments: ["Share repo link", "Add readme file"],
+      },
+      {
+        id: "42",
+        content: "Set up project repository",
+        assignedTo: "Alex",
+        comments: ["Share repo link", "Add readme file"],
+      },
+      {
+        id: "40",
         content: "Set up project repository",
         assignedTo: "Alex",
         comments: ["Share repo link", "Add readme file"],

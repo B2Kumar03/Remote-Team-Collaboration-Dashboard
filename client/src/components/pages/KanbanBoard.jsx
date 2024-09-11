@@ -4,6 +4,7 @@ import {
   PlusCircleIcon,
   ChatAltIcon,
   UserCircleIcon,
+  PlusIcon, // Heroicons Plus Icon for adding tasks
 } from "@heroicons/react/outline"; // Using Heroicons
 import { Doughnut } from "react-chartjs-2";
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js"; // Required for Chart.js
@@ -13,12 +14,14 @@ ChartJS.register(ArcElement, Tooltip, Legend); // Register chart elements
 // Kanban Board Component
 function KanbanBoard({ socket }) {
   const [columns, setColumns] = useState({
-    todo: { title: "To Do", tasks: [] },
-    inProgress: { title: "In Progress", tasks: [] },
-    done: { title: "Done", tasks: [] }
+    todo: { title: "To Do", tasks: [], color: "bg-red-400" },
+    inProgress: { title: "In Progress", tasks: [], color: "bg-yellow-400" },
+    done: { title: "Done", tasks: [], color: "bg-green-400" },
   });
   const [showComments, setShowComments] = useState({});
   const [showGraph, setShowGraph] = useState(false);
+  const [showAddTaskForm, setShowAddTaskForm] = useState(false);
+  const [newTask, setNewTask] = useState({ content: '', assignedTo: '' });
 
   useEffect(() => {
     // Fetch initial tasks on component mount
@@ -38,6 +41,8 @@ function KanbanBoard({ socket }) {
 
   useEffect(() => {
     // Listen for tasksUpdated event
+    localStorage.setItem('meeting', JSON.stringify({ date: '12/09/2024', time: '10:20',topic:"discuss about tech" }));
+
     socket.on("tasksUpdated", (updatedTasks) => {
       setColumns(updatedTasks);
     });
@@ -95,6 +100,14 @@ function KanbanBoard({ socket }) {
     setShowGraph(!showGraph);
   };
 
+  const handleAddTask = () => {
+    // Add task logic
+    console.log('New Task:', newTask);
+    // Reset form
+    setNewTask({ content: '', assignedTo: '' });
+    setShowAddTaskForm(false);
+  };
+
   // Calculate task percentages
   const totalTasks =
     columns.todo.tasks.length +
@@ -106,9 +119,9 @@ function KanbanBoard({ socket }) {
     datasets: [
       {
         data: [
-          (columns.todo.tasks.length / totalTasks) * 100,
-          (columns.inProgress.tasks.length / totalTasks) * 100,
-          (columns.done.tasks.length / totalTasks) * 100,
+          (columns.todo.tasks.length / totalTasks) * 100 || 0,
+          (columns.inProgress.tasks.length / totalTasks) * 100 || 0,
+          (columns.done.tasks.length / totalTasks) * 100 || 0,
         ],
         backgroundColor: ["#f87171", "#fbbf24", "#34d399"],
         hoverBackgroundColor: ["#f87171", "#fbbf24", "#34d399"],
@@ -118,13 +131,21 @@ function KanbanBoard({ socket }) {
 
   return (
     <div className="p-8 bg-gray-100 min-h-screen">
-      <div className="flex justify-between items-center mb-6">
+      <div className="flex justify-between items-center mb-6 border-b-2 pb-5">
         <h1 className="text-3xl font-bold">Kanban Board</h1>
         <button
           onClick={toggleGraphView}
           className="bg-blue-500 text-white px-4 py-2 rounded-md"
         >
           {showGraph ? "Hide Graph View" : "Show Graph View"}
+        </button>
+        {/* Admin-only Add Task Button */}
+        <button
+          onClick={() => setShowAddTaskForm(true)}
+          className="bg-green-500 text-white px-4 py-2 rounded-md"
+        >
+          <PlusIcon className="w-5 h-5 inline mr-2" />
+          Add Task
         </button>
       </div>
 
@@ -139,21 +160,18 @@ function KanbanBoard({ socket }) {
         </div>
       ) : (
         <div className="flex justify-center items-center">
-          <div className="flex space-x-4">
+          <div className="flex space-x-4 overflow-x-auto">
             <DragDropContext onDragEnd={onDragEnd}>
               {Object.entries(columns).map(([columnId, column]) => (
                 <Droppable key={columnId} droppableId={columnId}>
                   {(provided) => (
                     <div
-                      className="bg-white rounded-lg p-4 shadow-lg w-96"
+                      className={`p-4 rounded-lg shadow-lg w-96 h-[calc(100vh-150px)] overflow-y-auto ${column.color}`}
                       {...provided.droppableProps}
                       ref={provided.innerRef}
                     >
                       <div className="flex justify-between items-center mb-4">
                         <h2 className="text-2xl font-bold">{column.title}</h2>
-                        <button className="text-primaryBlue">
-                          <PlusCircleIcon className="w-6 h-6" />
-                        </button>
                       </div>
                       <div className="space-y-4">
                         {column.tasks.map((task, taskIndex) => (
@@ -213,6 +231,61 @@ function KanbanBoard({ socket }) {
                 </Droppable>
               ))}
             </DragDropContext>
+          </div>
+        </div>
+      )}
+
+      {/* Add Task Form */}
+      {showAddTaskForm && (
+        <div className="fixed inset-0 flex justify-center items-center bg-black bg-opacity-50">
+          <div className="bg-white p-8 rounded-lg shadow-lg w-96">
+            <h2 className="text-2xl font-bold mb-4">Add New Task</h2>
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                handleAddTask();
+              }}
+            >
+              <div className="mb-4">
+                <label className="block text-gray-700 mb-2" htmlFor="content">
+                  Task Content
+                </label>
+                <input
+                  id="content"
+                  type="text"
+                  value={newTask.content}
+                  onChange={(e) => setNewTask({ ...newTask, content: e.target.value })}
+                  className="w-full p-2 border border-gray-300 rounded-md"
+                  required
+                />
+              </div>
+              <div className="mb-4">
+                <label className="block text-gray-700 mb-2" htmlFor="assignedTo">
+                  Assigned To
+                </label>
+                <input
+                  id="assignedTo"
+                  type="text"
+                  value={newTask.assignedTo}
+                  onChange={(e) => setNewTask({ ...newTask, assignedTo: e.target.value })}
+                  className="w-full p-2 border border-gray-300 rounded-md"
+                  required
+                />
+              </div>
+              <button
+                type="submit"
+                className="bg-blue-500 text-white px-4 py-2 rounded-md"
+              >
+                Add Task
+              </button>
+              <button
+                type="button"
+                onClick={() => setShowAddTaskForm(false)}
+                className="ml-4 bg-gray-500 text-white px-4 py-2 rounded-md"
+              >
+                Cancel
+              </button>
+            </form>
           </div>
         </div>
       )}
