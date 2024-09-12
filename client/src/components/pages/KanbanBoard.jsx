@@ -166,7 +166,7 @@ function KanbanBoard({ socket }) {
                 <Droppable key={columnId} droppableId={columnId}>
                   {(provided) => (
                     <div
-                      className={`p-4 rounded-lg shadow-lg w-96 h-[calc(100vh-150px)] overflow-y-auto ${column.color}`}
+                      className={`p-4 rounded-lg shadow-lg w-96 h-[calc(100vh-150px)] overflow-y-auto `}
                       {...provided.droppableProps}
                       ref={provided.innerRef}
                     >
